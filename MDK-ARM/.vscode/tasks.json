@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: gcc.exe 生成活动文件",
+			"command": "D:\\emsoftware\\vscode\\MG\\mingw32\\bin\\gcc.exe",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}\\${fileBasenameNoExtension}.exe"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"group": "build",
+			"detail": "编译器: D:\\emsoftware\\vscode\\MG\\mingw32\\bin\\gcc.exe"
+		}
+	]
+}

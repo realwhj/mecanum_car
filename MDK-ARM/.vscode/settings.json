@@ -1,0 +1,13 @@
+{
+    "C_Cpp.errorSquiggles": "Enabled",
+    "files.associations": {
+        "robot.h": "c",
+        "line_patrol.h": "c",
+        "motor.h": "c",
+        "pid.h": "c",
+        "main.h": "c",
+        "oled.h": "c",
+        "oledfont.h": "c",
+        "bluetooth.h": "c"
+    }
+}
