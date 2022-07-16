@@ -89,11 +89,16 @@ void MecanumCal(ROBOT_T*robot_t)
 	//期望速度，忽略w方向
   robot_t->robot_config->v_ref=(float)sqrt(robot_t->robot_config->vy * robot_t->robot_config->vy + robot_t->robot_config->vx * robot_t->robot_config->vx);
 
-	//麦克纳姆方程解算各轮子速度
-  robot_t->motor1->vw_ref = robot_t->robot_config->vy + robot_t->robot_config->vx - robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
-  robot_t->motor2->vw_ref = robot_t->robot_config->vy - robot_t->robot_config->vx - robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
-  robot_t->motor3->vw_ref = -robot_t->robot_config->vy - robot_t->robot_config->vx - robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
-  robot_t->motor4->vw_ref = -robot_t->robot_config->vy + robot_t->robot_config->vx - robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
+	//麦克纳姆方程解算各轮子速度1、2、3、4分别为rf、lf、rb、lb
+//  robot_t->motor1->vw_ref = robot_t->robot_config->vy + robot_t->robot_config->vx + robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
+//  robot_t->motor2->vw_ref = robot_t->robot_config->vy - robot_t->robot_config->vx - robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
+//  robot_t->motor3->vw_ref = robot_t->robot_config->vy - robot_t->robot_config->vx + robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
+//  robot_t->motor4->vw_ref = robot_t->robot_config->vy + robot_t->robot_config->vx - robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
+	robot_t->motor1->vw_ref = robot_t->robot_config->vy - robot_t->robot_config->vx - robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
+  robot_t->motor2->vw_ref = robot_t->robot_config->vy + robot_t->robot_config->vx + robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
+  robot_t->motor3->vw_ref = robot_t->robot_config->vy + robot_t->robot_config->vx - robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
+  robot_t->motor4->vw_ref = robot_t->robot_config->vy - robot_t->robot_config->vx + robot_t->robot_config->w*(robot_t->robot_config->a+robot_t->robot_config->b);
+
 
   robot_t->motor1->speed_r_ref = robot_t->motor1->vw_ref/(0.11*2*3.15149);      //转速（弧度值)
   robot_t->motor2->speed_r_ref = robot_t->motor2->vw_ref/(0.11*2*3.15149);
@@ -183,7 +188,7 @@ void DirectionGet(ROBOT_T*robot_t)
 //驱动各个电机
 void MotorRun(ROBOT_T*robot_t)
 {
-  //电机1驱动
+  //电机1驱动rf
   if(robot_t->motor1->direction==0)//正转
   {
     HAL_GPIO_WritePin(GPIOF,GPIO_PIN_11,GPIO_PIN_SET);
@@ -201,15 +206,15 @@ void MotorRun(ROBOT_T*robot_t)
   TIM10->CCR1=2*abs(robot_t->motor1->pid_t->pulse_ref);     //电机输出
   HAL_TIM_PWM_Start(Motor_Port_1,Motor_CHANNEL_1);
 
-  //电机2驱动
+  //电机2驱动lf
   if(robot_t->motor2->direction==0)
   {
-    HAL_GPIO_WritePin(GPIOC,GPIO_PIN_10,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOG,GPIO_PIN_15,GPIO_PIN_SET);
-  }
-  else if(robot_t->motor2->direction==1){
     HAL_GPIO_WritePin(GPIOC,GPIO_PIN_10,GPIO_PIN_SET);
     HAL_GPIO_WritePin(GPIOG,GPIO_PIN_15,GPIO_PIN_RESET);
+  }
+  else if(robot_t->motor2->direction==1){
+    HAL_GPIO_WritePin(GPIOC,GPIO_PIN_10,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOG,GPIO_PIN_15,GPIO_PIN_SET);
   }
 	else{
 		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_10,GPIO_PIN_RESET);
@@ -219,15 +224,15 @@ void MotorRun(ROBOT_T*robot_t)
   TIM11->CCR1=2*abs(robot_t->motor2->pid_t->pulse_ref);
   HAL_TIM_PWM_Start(Motor_Port_2,Motor_CHANNEL_2);
 
-  //电机3驱动
+  //电机3驱动rb
   if(robot_t->motor3->direction==0)
   {
     HAL_GPIO_WritePin(GPIOD,GPIO_PIN_2,GPIO_PIN_SET);
     HAL_GPIO_WritePin(GPIOC,GPIO_PIN_11,GPIO_PIN_RESET);
   }
   else if(robot_t->motor3->direction==1){
-    HAL_GPIO_WritePin(GPIOD,GPIO_PIN_2,GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOC,GPIO_PIN_11,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOD,GPIO_PIN_2,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOC,GPIO_PIN_11,GPIO_PIN_SET);
   }
 	else{
 		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_2,GPIO_PIN_RESET);
@@ -237,7 +242,7 @@ void MotorRun(ROBOT_T*robot_t)
   TIM13->CCR1=2*abs(robot_t->motor2->pid_t->pulse_ref);
   HAL_TIM_PWM_Start(Motor_Port_3,Motor_CHANNEL_3);
 
-  //电机4驱动
+  //电机4驱动lb
   if(robot_t->motor1->direction==0)
   {
     HAL_GPIO_WritePin(GPIOD,GPIO_PIN_7,GPIO_PIN_SET);

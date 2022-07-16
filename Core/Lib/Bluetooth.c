@@ -163,9 +163,9 @@ void RomoteDataSolve(BlueToothdata*remotedata)
 		//如果打开电机且赋值且为蓝牙控制模式，则使用遥控数据
 		if(robot_t->MotorMode==MotorOn&&robot_t->CtrMode==ModeBlueTooth)
 		{
-			robot_t->robot_config->vx=(remotedata->x-1000)/500.0f;
-			robot_t->robot_config->vy=(remotedata->y-1000)/500.0f;
-			robot_t->robot_config->w= (remotedata->w-1000)/200.0f;
+			robot_t->robot_config->vx=(remotedata->x-1000)/320.0f;
+			robot_t->robot_config->vy=(remotedata->y-1000)/320.0f;
+			robot_t->robot_config->w= (remotedata->w-1000)/100.0f;
 		}
 	}
 }
